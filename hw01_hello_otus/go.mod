@@ -1,4 +1,4 @@
-module github.com/NataliaZabelina/homework
+module github.com/NataliaZabelina/hw01_hello_otus
 
 go 1.15
 
