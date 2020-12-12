@@ -1,4 +1,4 @@
-package hw02_unpack_string //nolint:golint,stylecheck
+package hw02_unpack_string
 
 import (
 	"testing"
@@ -15,6 +15,30 @@ type test struct {
 func TestUnpack(t *testing.T) {
 	for _, tst := range [...]test{
 		{
+			input:    "ala0b",
+			expected: "alb",
+		},
+		{
+			input:    "aaa0b",
+			expected: "aab",
+		},
+		{
+			input:    "v2yhK3ujj",
+			expected: "vvyhKKKujj",
+		},
+		{
+			input:    "a4bc2д5e",
+			expected: "aaaabccдддддe",
+		},
+		{
+			input:    "O4",
+			expected: "OOOO",
+		},
+		{
+			input:    "Зеленогла4зоеТакси",
+			expected: "ЗеленоглаааазоеТакси",
+		},
+		{
 			input:    "a4bc2d5e",
 			expected: "aaaabccddddde",
 		},
@@ -23,12 +47,39 @@ func TestUnpack(t *testing.T) {
 			expected: "abccd",
 		},
 		{
-			input:    "3abc",
+			input:    "x",
+			expected: "x",
+		},
+		{
+			input:    "45",
 			expected: "",
 			err:      ErrInvalidString,
 		},
 		{
-			input:    "45",
+			input:    "9",
+			expected: "",
+			err:      ErrInvalidString,
+		},
+		{
+			input:    "0",
+			expected: "",
+			err:      ErrInvalidString,
+		},
+		{
+			input:    "z0",
+			expected: "",
+		},
+		{
+			input:    "z00",
+			expected: "",
+			err:      ErrInvalidString,
+		},
+		{
+			input:    "",
+			expected: "",
+		},
+		{
+			input:    " ",
 			expected: "",
 			err:      ErrInvalidString,
 		},
@@ -38,12 +89,53 @@ func TestUnpack(t *testing.T) {
 			err:      ErrInvalidString,
 		},
 		{
-			input:    "",
+			input:    "#abc",
 			expected: "",
+			err:      ErrInvalidString,
 		},
 		{
-			input:    "aaa0b",
-			expected: "aab",
+			input:    "Hello,",
+			expected: "",
+			err:      ErrInvalidString,
+		},
+		{
+			input:    "abc kLi",
+			expected: "",
+			err:      ErrInvalidString,
+		},
+		{
+			input:    "'low'",
+			expected: "",
+			err:      ErrInvalidString,
+		},
+		{
+			input:    `res2t`,
+			expected: "resst",
+		},
+		{
+			input:    `re\n2t`,
+			expected: "",
+			err:      ErrInvalidString,
+		},
+		{
+			input:    "d\n5abc",
+			expected: "d\n\n\n\n\nabc",
+		},
+		{
+			input:    "\n3ipo",
+			expected: "\n\n\nipo",
+		},
+		{
+			input:    "\n",
+			expected: "\n",
+		},
+		{
+			input:    "\n2",
+			expected: "\n\n",
+		},
+		{
+			input:    "\n0",
+			expected: "",
 		},
 	} {
 		result, err := Unpack(tst.input)
