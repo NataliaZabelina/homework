@@ -8,12 +8,10 @@ import (
 )
 
 var ErrInvalidString = errors.New("invalid string")
-var NewLine rune = 10
+var newLine rune = 10
 
 func isFirstElementValid(element rune) error {
-	if unicode.IsDigit(element) {
-		return ErrInvalidString
-	} else if unicode.IsLetter(element) || element == NewLine {
+	if unicode.IsLetter(element) || element == newLine {
 		return nil
 	}
 	return ErrInvalidString
@@ -49,8 +47,9 @@ func Unpack(inputString string) (string, error) {
 				result.WriteString(newResult)
 			}
 			previousValue = value
-		case unicode.IsLetter(value) || value == NewLine:
-			result.WriteString(string(value))
+
+		case unicode.IsLetter(value) || value == newLine:
+			result.WriteRune(value)
 			previousValue = value
 		default:
 			return "", ErrInvalidString

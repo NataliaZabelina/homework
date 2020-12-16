@@ -13,134 +13,48 @@ type test struct {
 }
 
 func TestUnpack(t *testing.T) {
-	for _, tst := range [...]test{
-		{
-			input:    "ala0b",
-			expected: "alb",
-		},
-		{
-			input:    "aaa0b",
-			expected: "aab",
-		},
-		{
-			input:    "v2yhK3ujj",
-			expected: "vvyhKKKujj",
-		},
-		{
-			input:    "a4bc2д5e",
-			expected: "aaaabccдддддe",
-		},
-		{
-			input:    "O4",
-			expected: "OOOO",
-		},
-		{
-			input:    "Зеленогла4зоеТакси",
-			expected: "ЗеленоглаааазоеТакси",
-		},
-		{
-			input:    "a4bc2d5e",
-			expected: "aaaabccddddde",
-		},
-		{
-			input:    "abccd",
-			expected: "abccd",
-		},
-		{
-			input:    "x",
-			expected: "x",
-		},
-		{
-			input:    "45",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "9",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "0",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "z0",
-			expected: "",
-		},
-		{
-			input:    "z00",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "",
-			expected: "",
-		},
-		{
-			input:    " ",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "aaa10b",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "#abc",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "Hello,",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "abc kLi",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "'low'",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    `res2t`,
-			expected: "resst",
-		},
-		{
-			input:    `re\n2t`,
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "d\n5abc",
-			expected: "d\n\n\n\n\nabc",
-		},
-		{
-			input:    "\n3ipo",
-			expected: "\n\n\nipo",
-		},
-		{
-			input:    "\n",
-			expected: "\n",
-		},
-		{
-			input:    "\n2",
-			expected: "\n\n",
-		},
-		{
-			input:    "\n0",
-			expected: "",
-		},
-	} {
-		result, err := Unpack(tst.input)
-		require.Equal(t, tst.err, err)
-		require.Equal(t, tst.expected, result)
+	cases := []struct {
+		input string
+		expected string
+		err error
+	}{
+		{"", "", nil},
+		{"ala0b", "alb", nil},
+		{"aaa0b", "aab", nil},
+		{"v2yhK3ujj", "vvyhKKKujj", nil},
+		{"a4bc2д5e", "aaaabccдддддe", nil},
+		{"O4", "OOOO", nil},
+		{"Зеленогла4зоеТакси", "ЗеленоглаааазоеТакси", nil},
+		{"a4bc2d5e", "aaaabccddddde", nil},
+		{"abccd", "abccd", nil},
+		{"45", "", ErrInvalidString},
+		{"x", "x", nil},
+		{"9", "", ErrInvalidString},
+		{"0", "", ErrInvalidString},
+		{"z0", "", nil},
+		{"z00", "", ErrInvalidString},
+		{" ", "", ErrInvalidString},
+		{"aaa10b", "", ErrInvalidString},
+		{"#abc", "", ErrInvalidString},
+		{"Hello,", "", ErrInvalidString},
+		{"abc kLi", "", ErrInvalidString},
+		{"'low',", "", ErrInvalidString},
+		{`res2t`, "resst", nil},
+		{`re\n2t`, "", ErrInvalidString},
+		{"d\n5abc", "d\n\n\n\n\nabc", nil},
+		{"\n3ipo", "\n\n\nipo", nil},
+		{"\n", "\n", nil},
+		{"\n2", "\n\n", nil},
+		{"\n0", "", nil},
+	}
+
+	for _, tc := range cases {
+	tc := tc
+	t.Run(tc.input, func(t *testing.T) {
+		result, err := Unpack(tc.input)
+		require.Equal(t, tc.err, err)
+		require.Equal(t, tc.expected, result)
+		})
 	}
 }
 
