@@ -1,4 +1,4 @@
-package hw02_unpack_string //nolint:golint,stylecheck
+package hw02_unpack_string
 
 import (
 	"testing"
@@ -13,42 +13,48 @@ type test struct {
 }
 
 func TestUnpack(t *testing.T) {
-	for _, tst := range [...]test{
-		{
-			input:    "a4bc2d5e",
-			expected: "aaaabccddddde",
-		},
-		{
-			input:    "abccd",
-			expected: "abccd",
-		},
-		{
-			input:    "3abc",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "45",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "aaa10b",
-			expected: "",
-			err:      ErrInvalidString,
-		},
-		{
-			input:    "",
-			expected: "",
-		},
-		{
-			input:    "aaa0b",
-			expected: "aab",
-		},
-	} {
-		result, err := Unpack(tst.input)
-		require.Equal(t, tst.err, err)
-		require.Equal(t, tst.expected, result)
+	cases := []struct {
+		input string
+		expected string
+		err error
+	}{
+		{"", "", nil},
+		{"ala0b", "alb", nil},
+		{"aaa0b", "aab", nil},
+		{"v2yhK3ujj", "vvyhKKKujj", nil},
+		{"a4bc2д5e", "aaaabccдддддe", nil},
+		{"O4", "OOOO", nil},
+		{"Зеленогла4зоеТакси", "ЗеленоглаааазоеТакси", nil},
+		{"a4bc2d5e", "aaaabccddddde", nil},
+		{"abccd", "abccd", nil},
+		{"45", "", ErrInvalidString},
+		{"x", "x", nil},
+		{"9", "", ErrInvalidString},
+		{"0", "", ErrInvalidString},
+		{"z0", "", nil},
+		{"z00", "", ErrInvalidString},
+		{" ", "", ErrInvalidString},
+		{"aaa10b", "", ErrInvalidString},
+		{"#abc", "", ErrInvalidString},
+		{"Hello,", "", ErrInvalidString},
+		{"abc kLi", "", ErrInvalidString},
+		{"'low',", "", ErrInvalidString},
+		{`res2t`, "resst", nil},
+		{`re\n2t`, "", ErrInvalidString},
+		{"d\n5abc", "d\n\n\n\n\nabc", nil},
+		{"\n3ipo", "\n\n\nipo", nil},
+		{"\n", "\n", nil},
+		{"\n2", "\n\n", nil},
+		{"\n0", "", nil},
+	}
+
+	for _, tc := range cases {
+	tc := tc
+	t.Run(tc.input, func(t *testing.T) {
+		result, err := Unpack(tc.input)
+		require.Equal(t, tc.err, err)
+		require.Equal(t, tc.expected, result)
+		})
 	}
 }
 
