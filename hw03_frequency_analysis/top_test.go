@@ -6,9 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Change to true if needed
-var taskWithAsteriskIsCompleted = false
-
 var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
 	ступеньки собственным затылком:  бум-бум-бум.  Другого  способа
@@ -48,13 +45,60 @@ func TestTop10(t *testing.T) {
 		require.Len(t, Top10(""), 0)
 	})
 
+	t.Run("string consists of spaces", func(t *testing.T) {
+		require.Len(t, Top10("          "), 0)
+	})
+
+	t.Run("string consists of special symbols", func(t *testing.T) {
+		text := ",, ^   # % >_<  {}  -= ?@@@ ~+   *** *** ,,"
+		expected := []string{",,", "^", "#", "%", ">_<", "{}", "-=", "?@@@", "~+", "***"}
+		require.ElementsMatch(t, expected, Top10(text))
+	})
+
+	t.Run("string with trailing spaces", func(t *testing.T) {
+		text := " Ability to highlight lines and blocks of code. That's true. "
+		expected := []string{"Ability", "to", "highlight", "lines", "and", "blocks", "of", "code.", "That's", "true."}
+		require.ElementsMatch(t, expected, Top10(text))
+	})
+
+	t.Run("string with one word", func(t *testing.T) {
+		text := "Hello,sweety!"
+		expected := []string{"Hello,sweety!"}
+		require.ElementsMatch(t, expected, Top10(text))
+	})
+
+	t.Run("string with less than 10 words", func(t *testing.T) {
+		text := "One, two, one one the an oposite int you."
+		expected := []string{"one", "One,", "two,", "the", "an", "oposite", "int", "you."}
+		require.ElementsMatch(t, expected, Top10(text))
+	})
+
+	t.Run("string with 10 same words", func(t *testing.T) {
+		text := "top top top top top top top top top top"
+		expected := []string{"top"}
+		require.ElementsMatch(t, expected, Top10(text))
+	})
+
+	t.Run("string with same word, but different forms", func(t *testing.T) {
+		text := "Top top. tOp toP TOP !top top? top* top, top"
+		expected := []string{"Top", "top.", "tOp", "toP", "TOP", "!top", "top?", "top*", "top,", "top"}
+		require.ElementsMatch(t, expected, Top10(text))
+	})
+
+	t.Run("string with 9 unique words", func(t *testing.T) {
+		text := "One, two, three, four, five, six, seven, eight, nine."
+		expected := []string{"One,", "two,", "three,", "four,", "five,", "six,", "seven,", "eight,", "nine."}
+		require.ElementsMatch(t, expected, Top10(text))
+	})
+
+	t.Run("string with 10 unique words", func(t *testing.T) {
+		text := "One, two, three, four, five, six, seven, eight, nine, ten."
+		expected := []string{"One,", "two,", "three,", "four,", "five,", "six,", "seven,", "eight,", "nine,", "ten."}
+		require.ElementsMatch(t, expected, Top10(text))
+	})
+
 	t.Run("positive test", func(t *testing.T) {
-		if taskWithAsteriskIsCompleted {
-			expected := []string{"он", "а", "и", "что", "ты", "не", "если", "то", "его", "кристофер", "робин", "в"}
-			require.Subset(t, expected, Top10(text))
-		} else {
-			expected := []string{"он", "и", "а", "что", "ты", "не", "если", "-", "то", "Кристофер"}
-			require.ElementsMatch(t, expected, Top10(text))
-		}
+		expected := []string{"он", "и", "а", "что", "ты", "не", "если", "-", "то", "Кристофер"}
+		require.ElementsMatch(t, expected, Top10(text))
 	})
 }
