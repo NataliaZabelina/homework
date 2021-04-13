@@ -10,7 +10,7 @@ import (
 )
 
 func TestCache(t *testing.T) {
-	t.Run("empty cache", func(t *testing.T) {
+	t.Run("check get from empty cache", func(t *testing.T) {
 		c := NewCache(10)
 
 		_, ok := c.Get("aaa")
@@ -20,7 +20,7 @@ func TestCache(t *testing.T) {
 		require.False(t, ok)
 	})
 
-	t.Run("simple", func(t *testing.T) {
+	t.Run("check Set and Get", func(t *testing.T) {
 		c := NewCache(5)
 
 		wasInCache := c.Set("aaa", 100)
@@ -49,8 +49,130 @@ func TestCache(t *testing.T) {
 		require.Nil(t, val)
 	})
 
-	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+	t.Run("check capacity", func(t *testing.T) {
+		c := NewCache(3)
+		c.Set("item_1", 78)
+		c.Set("item_2", 73)
+		c.Set("item_3", 12)
+
+		val, ok := c.Get("item_1")
+		require.Equal(t, 78, val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_2")
+		require.Equal(t, 73, val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_3")
+		require.Equal(t, 12, val)
+		require.True(t, ok)
+
+		c.Set("item_4", 120)
+		val, ok = c.Get("item_4")
+		require.Equal(t, 120, val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_1")
+		require.False(t, ok)
+		require.Nil(t, val)
+	})
+
+	t.Run("remove items due to capacity", func(t *testing.T) {
+		c := NewCache(2)
+		c.Set("item_1", "ONE")
+		c.Set("item_2", "TWO")
+
+		val, ok := c.Get("item_1")
+		require.Equal(t, "ONE", val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_2")
+		require.Equal(t, "TWO", val)
+		require.True(t, ok)
+
+		c.Set("item_3", "THREE")
+		val, ok = c.Get("item_3")
+		require.Equal(t, "THREE", val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_1")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		c.Set("item_4", "FOUR")
+		val, ok = c.Get("item_4")
+		require.Equal(t, "FOUR", val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_2")
+		require.False(t, ok)
+		require.Nil(t, val)
+	})
+
+	t.Run("clear cache", func(t *testing.T) {
+		c := NewCache(2)
+		c.Set("item_1", true)
+		c.Set("item_2", false)
+
+		val, ok := c.Get("item_1")
+		require.Equal(t, true, val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_2")
+		require.Equal(t, false, val)
+		require.True(t, ok)
+
+		c.Clear()
+
+		val, ok = c.Get("item_1")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		val, ok = c.Get("item_2")
+		require.False(t, ok)
+		require.Nil(t, val)
+	})
+
+	t.Run("check lru logic", func(t *testing.T) {
+		c := NewCache(3)
+		c.Set("item_1", 6)
+		c.Set("item_2", 8)
+		c.Set("item_3", 2)
+
+		val, ok := c.Get("item_1")
+		require.Equal(t, 6, val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_2")
+		require.Equal(t, 8, val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_3")
+		require.Equal(t, 2, val)
+		require.True(t, ok)
+
+		c.Set("item_2", 90)
+		_, ok = c.Get("item_3")
+		require.True(t, ok)
+		c.Set("item_2", 88)
+		c.Set("item_3", 22)
+
+		c.Set("item_4", "FOUR")
+		val, ok = c.Get("item_4")
+		require.Equal(t, "FOUR", val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_1")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		val, ok = c.Get("item_2")
+		require.Equal(t, 88, val)
+		require.True(t, ok)
+
+		val, ok = c.Get("item_3")
+		require.Equal(t, 22, val)
+		require.True(t, ok)
 	})
 }
 
