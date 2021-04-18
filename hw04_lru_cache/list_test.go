@@ -108,7 +108,6 @@ func (s *listSuite) TestRemoveBackItemFromList() {
 }
 
 func (s *listSuite) TestRemoveFromOneItemList() {
-
 	l := NewList()
 
 	l.PushFront(70209)
