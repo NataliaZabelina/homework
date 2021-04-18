@@ -17,28 +17,28 @@ type ListItem struct {
 }
 
 type list struct {
-	Length    int
-	FrontElem *ListItem
-	BackElem  *ListItem
+	length    int
+	frontElem *ListItem
+	backElem  *ListItem
 }
 
 func (l *list) Len() int {
-	return l.Length
+	return l.length
 }
 
 func (l *list) Front() *ListItem {
-	return l.FrontElem
+	return l.frontElem
 }
 
 func (l *list) Back() *ListItem {
-	return l.BackElem
+	return l.backElem
 }
 
 func (l *list) pushAfter(item *ListItem, newItem *ListItem) {
 	newItem.Prev = item
 	if item.Next == nil {
 		newItem.Next = nil
-		l.BackElem = newItem
+		l.backElem = newItem
 	} else {
 		newItem.Next = item.Next
 		item.Next.Prev = newItem
@@ -50,7 +50,7 @@ func (l *list) pushBefore(item *ListItem, newItem *ListItem) {
 	newItem.Next = item
 	if item.Prev == nil {
 		newItem.Prev = nil
-		l.FrontElem = newItem
+		l.frontElem = newItem
 	} else {
 		newItem.Prev = item.Prev
 		item.Prev.Next = newItem
@@ -62,16 +62,16 @@ func (l *list) pushBefore(item *ListItem, newItem *ListItem) {
 func (l *list) PushFront(v interface{}) *ListItem {
 	newItem := &ListItem{Value: v}
 
-	if l.FrontElem == nil {
-		l.FrontElem = newItem
-		l.BackElem = newItem
+	if l.frontElem == nil {
+		l.frontElem = newItem
+		l.backElem = newItem
 		newItem.Prev = nil
 		newItem.Next = nil
 	} else {
-		l.pushBefore(l.FrontElem, newItem)
+		l.pushBefore(l.frontElem, newItem)
 	}
 
-	l.Length++
+	l.length++
 
 	return newItem
 }
@@ -79,11 +79,11 @@ func (l *list) PushFront(v interface{}) *ListItem {
 func (l *list) PushBack(v interface{}) *ListItem {
 	newItem := &ListItem{Value: v}
 
-	if l.BackElem == nil {
+	if l.backElem == nil {
 		l.PushFront(v)
 	} else {
-		l.pushAfter(l.BackElem, newItem)
-		l.Length++
+		l.pushAfter(l.backElem, newItem)
+		l.length++
 	}
 
 	return newItem
@@ -91,17 +91,17 @@ func (l *list) PushBack(v interface{}) *ListItem {
 
 func (l *list) Remove(item *ListItem) {
 	if item.Prev == nil {
-		l.FrontElem = item.Next
+		l.frontElem = item.Next
 	} else {
 		item.Prev.Next = item.Next
 	}
 	if item.Next == nil {
-		l.BackElem = item.Prev
+		l.backElem = item.Prev
 	} else {
 		item.Next.Prev = item.Prev
 	}
 
-	l.Length--
+	l.length--
 }
 
 func (l *list) MoveToFront(item *ListItem) {

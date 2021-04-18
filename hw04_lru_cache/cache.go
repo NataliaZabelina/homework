@@ -51,14 +51,7 @@ func (c *lruCache) Get(key Key) (interface{}, bool) {
 }
 
 func (c *lruCache) Clear() {
-	item := c.queue.Back()
-	for {
-		delete(c.items, item.Value.(cacheItem).key)
-		item = item.Prev
-		if item == nil {
-			break
-		}
-	}
+	c.items = make(map[Key]*ListItem)
 	c.queue = NewList()
 }
 
